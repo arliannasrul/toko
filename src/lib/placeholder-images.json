@@ -1,3 +1,100 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "prod1",
+      "description": "A modern laptop on a wooden desk.",
+      "imageUrl": "https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsYXB0b3AlMjBkZXNrfGVufDB8fHx8MTc2NDM3NTI0MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop desk"
+    },
+    {
+      "id": "prod2",
+      "description": "A pair of wireless headphones.",
+      "imageUrl": "https://images.unsplash.com/photo-1637780852590-8ab27248ec41?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MHx8fHwxNzY0MzQ0MjYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wireless headphones"
+    },
+    {
+      "id": "prod3",
+      "description": "A sleek smartphone displaying a colorful screen.",
+      "imageUrl": "https://images.unsplash.com/photo-1619462729239-ca28ab216892?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzbWFydHBob25lJTIwc2NyZWVufGVufDB8fHx8MTc2NDI5OTk5Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smartphone screen"
+    },
+    {
+      "id": "prod4",
+      "description": "A hardcover book with a minimalist cover.",
+      "imageUrl": "https://images.unsplash.com/photo-1730372798571-0f8e9c7d84aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYXJkY292ZXIlMjBib29rfGVufDB8fHx8MTc2NDQwMTE0NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hardcover book"
+    },
+    {
+      "id": "prod5",
+      "description": "A collection of classic novels.",
+      "imageUrl": "https://images.unsplash.com/photo-1656774339612-05c940b504e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y2xhc3NpYyUyMG5vdmVsc3xlbnwwfHx8fDE3NjQ0MDAxNTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "classic novels"
+    },
+    {
+      "id": "prod6",
+      "description": "An open comic book with vibrant illustrations.",
+      "imageUrl": "https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjb21pYyUyMGJvb2t8ZW58MHx8fHwxNzY0MzIyNzAwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "comic book"
+    },
+    {
+      "id": "prod7",
+      "description": "A comfortable blue t-shirt on a hanger.",
+      "imageUrl": "https://images.unsplash.com/photo-1734249024828-f89d910cc69c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxibHVlJTIwdC1zaGlydHxlbnwwfHx8fDE3NjQ0MDExNDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blue t-shirt"
+    },
+    {
+      "id": "prod8",
+      "description": "A stylish denim jacket.",
+      "imageUrl": "https://images.unsplash.com/photo-1543076447-215ad9ba6923?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkZW5pbSUyMGphY2tldHxlbnwwfHx8fDE3NjQzODgzNzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "denim jacket"
+    },
+    {
+      "id": "prod9",
+      "description": "A pair of modern sneakers.",
+      "imageUrl": "https://images.unsplash.com/photo-1748354815017-94c4be51dea9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb2Rlcm4lMjBzbmVha2Vyc3xlbnwwfHx8fDE3NjQ0MDExNDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern sneakers"
+    },
+    {
+      "id": "prod10",
+      "description": "A ceramic mug with a simple design.",
+      "imageUrl": "https://images.unsplash.com/photo-1666866875759-84154ec24c85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjZXJhbWljJTIwbXVnfGVufDB8fHx8MTc2NDI5MDkwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ceramic mug"
+    },
+    {
+      "id": "prod11",
+      "description": "A set of decorative cushions.",
+      "imageUrl": "https://images.unsplash.com/photo-1559235335-5618786599e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkZWNvcmF0aXZlJTIwY3VzaGlvbnN8ZW58MHx8fHwxNzY0NDAxMTQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "decorative cushions"
+    },
+    {
+      "id": "prod12",
+      "description": "A minimalist desk lamp.",
+      "imageUrl": "https://images.unsplash.com/photo-1617363020293-62faac14783d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkZXNrJTIwbGFtcHxlbnwwfHx8fDE3NjQzOTQ2MDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desk lamp"
+    },
+    {
+      "id": "prod13",
+      "description": "A smartwatch with a black band.",
+      "imageUrl": "https://images.unsplash.com/photo-1632794716789-42d9995fb5b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzbWFydHdhdGNofGVufDB8fHx8MTc2NDM1MDUzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smartwatch"
+    },
+    {
+      "id": "prod14",
+      "description": "A fantasy novel with an epic cover.",
+      "imageUrl": "https://images.unsplash.com/photo-1739521949679-c9abf6e5c35e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmYW50YXN5JTIwYm9va3xlbnwwfHx8fDE3NjQ0MDExNDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fantasy book"
+    },
+    {
+      "id": "prod15",
+      "description": "A cozy wool sweater.",
+      "imageUrl": "https://images.unsplash.com/photo-1588271968087-4c51abe05afc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b29sJTIwc3dlYXRlcnxlbnwwfHx8fDE3NjQzNDIxNjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wool sweater"
+    },
+    {
+      "id": "prod16",
+      "description": "A modern scented candle.",
+      "imageUrl": "https://images.unsplash.com/photo-1612293905607-b003de9e54fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzY2VudGVkJTIwY2FuZGxlfGVufDB8fHx8MTc2NDMzOTcxMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "scented candle"
+    }
+  ]
 }
