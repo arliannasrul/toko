@@ -49,7 +49,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [toast]);
 
   const signInWithGoogle = async () => {
-    if (!auth) return;
+    if (!auth) {
+      toast({
+        title: 'Authentication not ready',
+        description: 'Please wait a moment and try to sign in again.',
+        variant: 'destructive',
+      });
+      return;
+    }
     const provider = new GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
