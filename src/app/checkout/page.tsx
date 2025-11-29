@@ -21,15 +21,20 @@ export default function CheckoutPage() {
   const { cartItems, cartTotal, clearCart, cartCount } = useCart();
   const { toast } = useToast();
   
-  const auth = getAuth(getFirebase());
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, [auth]);
+    const app = getFirebase();
+    if(app) {
+        const auth = getAuth(app);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          setUser(user);
+          setLoading(false);
+        });
+        return () => unsubscribe();
+    } else {
+        setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {

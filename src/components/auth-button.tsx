@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, signInWithRedirect, signOut, GoogleAuthProvider, User } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, User } from 'firebase/auth';
 import { getFirebase } from '@/lib/firebase';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -24,20 +24,34 @@ export function AuthButton() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const auth = getAuth(getFirebase());
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const app = getFirebase();
+    if (app) {
+      const auth = getAuth(app);
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
+      return () => unsubscribe();
+    } else {
       setLoading(false);
-    });
-    return () => unsubscribe();
-  }, [auth]);
+    }
+  }, []);
   
   const signInWithGoogle = async () => {
+    const app = getFirebase();
+    if (!app) {
+      toast({ title: 'Firebase not initialized', variant: 'destructive' });
+      return;
+    }
+    const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
+      await signInWithPopup(auth, provider);
+      toast({
+        title: 'Signed In',
+        description: `Welcome!`,
+      });
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       toast({
@@ -49,6 +63,12 @@ export function AuthButton() {
   };
 
   const logout = async () => {
+    const app = getFirebase();
+     if (!app) {
+      toast({ title: 'Firebase not initialized', variant: 'destructive' });
+      return;
+    }
+    const auth = getAuth(app);
     try {
       await signOut(auth);
       router.push('/');

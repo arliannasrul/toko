@@ -5,6 +5,10 @@ import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 let app: FirebaseApp | null = null;
 
 export function getFirebase() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  
   if (app) {
     return app;
   }
@@ -19,20 +23,14 @@ export function getFirebase() {
   };
 
   if (!firebaseConfig.apiKey) {
-    throw new Error('Firebase API Key is missing. Check your .env file.');
+    console.error('Firebase API Key is missing. Check your .env file.');
+    return null;
   }
 
-  if (typeof window !== 'undefined') {
-    if (getApps().length === 0) {
-      app = initializeApp(firebaseConfig);
-    } else {
-      app = getApp();
-    }
-  }
-  
-  if (!app) {
-    // This should not happen on the client
-    throw new Error("Firebase app could not be initialized.");
+  if (getApps().length === 0) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApp();
   }
 
   return app;
