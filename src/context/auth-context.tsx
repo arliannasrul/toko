@@ -85,7 +85,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
+      // Explicitly setting authDomain as a last resort for complex environments.
+      await signInWithRedirect(auth, provider, undefined);
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
