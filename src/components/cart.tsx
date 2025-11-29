@@ -17,30 +17,57 @@ import {
 import { Separator } from './ui/separator';
 import { placeholderImages } from '@/lib/placeholder-images';
 import { ScrollArea } from './ui/scroll-area';
+import { useAuth } from '@/context/auth-context';
 
 export function Cart() {
-  const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart } = useCart();
+  const { user, loading } = useAuth();
+  const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, loading: cartLoading } = useCart();
 
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
-          <ShoppingCart className="h-5 w-5" />
-          {cartCount > 0 && (
-            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-              {cartCount}
-            </span>
-          )}
-          <span className="sr-only">Open shopping cart</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
-        <SheetHeader className="px-6">
-          <SheetTitle>Shopping Cart ({cartCount})</SheetTitle>
-        </SheetHeader>
-        <Separator />
-        {cartCount > 0 ? (
-          <>
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+            <p>Loading...</p>
+        </div>
+      );
+    }
+    
+    if (!user) {
+         return (
+             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center p-4">
+                 <ShoppingCart className="h-16 w-16 text-muted-foreground" />
+                 <h3 className="text-xl font-semibold">Harap login untuk mulai berbelanja</h3>
+                 <p className="text-muted-foreground">Keranjang belanja Anda akan disimpan di akun Anda.</p>
+                 {/* The AuthButton can be used here or just a link to the login page if one exists */}
+             </div>
+         );
+    }
+
+    if (cartLoading) {
+       return (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+            <p>Loading cart...</p>
+        </div>
+      );
+    }
+
+    if (cartCount === 0) {
+       return (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+            <ShoppingCart className="h-16 w-16 text-muted-foreground" />
+            <h3 className="text-xl font-semibold">Your cart is empty</h3>
+            <p className="text-muted-foreground">Add some products to get started!</p>
+            <SheetClose asChild>
+                <Button asChild>
+                  <Link href="/">Continue Shopping</Link>
+                </Button>
+            </SheetClose>
+          </div>
+       );
+    }
+
+    return (
+        <>
             <ScrollArea className="flex-grow pr-6">
               <div className="flex flex-col gap-4 py-4">
                 {cartItems.map((item) => {
@@ -88,25 +115,36 @@ export function Cart() {
                   <span>${cartTotal.toFixed(2)}</span>
                 </div>
                  <SheetClose asChild>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full" disabled={cartCount === 0}>
                       <Link href="/checkout">Proceed to Checkout</Link>
                     </Button>
                   </SheetClose>
               </div>
             </SheetFooter>
           </>
-        ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-            <ShoppingCart className="h-16 w-16 text-muted-foreground" />
-            <h3 className="text-xl font-semibold">Your cart is empty</h3>
-            <p className="text-muted-foreground">Add some products to get started!</p>
-            <SheetClose asChild>
-                <Button asChild>
-                  <Link href="/">Continue Shopping</Link>
-                </Button>
-            </SheetClose>
-          </div>
-        )}
+    );
+  }
+
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <ShoppingCart className="h-5 w-5" />
+          {user && cartCount > 0 && (
+            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              {cartCount}
+            </span>
+          )}
+          <span className="sr-only">Open shopping cart</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+        <SheetHeader className="px-6">
+          <SheetTitle>Shopping Cart {user && cartCount > 0 ? `(${cartCount})`: ''}</SheetTitle>
+        </SheetHeader>
+        <Separator />
+        {renderContent()}
       </SheetContent>
     </Sheet>
   );

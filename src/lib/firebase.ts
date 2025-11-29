@@ -2,26 +2,22 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp, type FirebaseOptions } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
+let firestore: Firestore | null = null;
 
 async function getFirebaseConfig(): Promise<FirebaseOptions | null> {
     try {
-        // In a real app, you'd fetch this from a secure API endpoint.
-        // For this example, we'll use environment variables directly,
-        // but ensure they are prefixed with NEXT_PUBLIC_.
-        const firebaseConfig = {
-            apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-            authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-            storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-            messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-            appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-        };
+        const response = await fetch('/api/init');
+        if (!response.ok) {
+            throw new Error('Failed to fetch Firebase config');
+        }
+        const firebaseConfig = await response.json();
 
         if (!firebaseConfig.apiKey) {
-            console.error("Firebase config is missing. Check your .env.local file.");
+            console.error("Firebase config is missing from API.");
             return null;
         }
         return firebaseConfig;
@@ -35,7 +31,7 @@ async function getFirebaseConfig(): Promise<FirebaseOptions | null> {
 
 export async function initializeFirebaseClient() {
   if (app) {
-    return { app, auth };
+    return { app, auth, firestore };
   }
 
   const firebaseConfig = await getFirebaseConfig();
@@ -50,16 +46,17 @@ export async function initializeFirebaseClient() {
     app = getApp();
   }
   auth = getAuth(app);
+  firestore = getFirestore(app);
 
-  return { app, auth };
+  return { app, auth, firestore };
 }
 
 
 export function getFirebase() {
-  if (!app || !auth) {
+  if (!app || !auth || !firestore) {
     // This should not happen on the client if initialization is done correctly.
      throw new Error("Firebase app could not be initialized.");
   }
 
-  return { app, auth };
+  return { app, auth, firestore };
 }
