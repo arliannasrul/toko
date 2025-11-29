@@ -21,21 +21,22 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   
   useEffect(() => {
-    if (!authLoading && !user) {
-      toast({
-        title: 'Authentication Required',
-        description: 'Please sign in to proceed to checkout.',
-        variant: 'destructive',
-      });
-      router.push('/');
-    }
-    if (!cartLoading && cartCount === 0) {
+    if (!authLoading) {
+      if (!user) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please sign in to proceed to checkout.',
+          variant: 'destructive',
+        });
+        router.push('/');
+      } else if (!cartLoading && cartCount === 0) {
         toast({
             title: 'Your cart is empty',
             description: 'Please add items to your cart before checking out.',
             variant: 'destructive',
         });
         router.push('/');
+      }
     }
   }, [user, authLoading, cartCount, cartLoading, router, toast]);
 
@@ -46,7 +47,7 @@ export default function CheckoutPage() {
     router.push('/checkout/success');
   };
   
-  if (authLoading || cartLoading || !user) {
+  if (authLoading || cartLoading || !user || cartCount === 0) {
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold tracking-tight mb-8 text-center font-headline">Checkout</h1>
