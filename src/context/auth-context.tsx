@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     if (!firebaseConfig.apiKey) {
-      console.error('Firebase API Key is missing.');
+      console.error('Firebase API Key is missing. Check your .env file.');
       toast({
         title: 'Configuration Error',
         description: 'Firebase API Key is missing. The app will not work correctly.',
@@ -61,7 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch((error) => {
-        if (error.code !== 'auth/user-cancelled') {
+        if (error.code === 'auth/unauthorized-domain') {
+             console.error("Firebase Auth Error: This domain is not authorized. Please check your Firebase project settings.", error);
+             toast({
+                title: 'Configuration Error',
+                description: 'This domain is not authorized for authentication. Please check your Firebase console.',
+                variant: 'destructive',
+            });
+        } else if (error.code !== 'auth/user-cancelled') {
              console.error("Error getting redirect result: ", error);
             toast({
                 title: 'Login Failed',
