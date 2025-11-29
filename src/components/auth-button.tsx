@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, User } from 'firebase/auth';
-import { getFirebase } from '@/lib/firebase';
+import { initializeFirebaseClient } from '@/lib/firebase';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -20,31 +20,31 @@ import { useToast } from '@/hooks/use-toast';
 
 export function AuthButton() {
   const [user, setUser] = useState<User | null>(null);
+  const [auth, setAuth] = useState<Auth | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    const app = getFirebase();
-    if (app) {
-      const auth = getAuth(app);
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
+    initializeFirebaseClient().then(({ auth }) => {
+        setAuth(auth);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUser(user);
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }).catch(error => {
+        console.error("Firebase initialization failed:", error);
+        toast({ title: 'Firebase initialization failed', variant: 'destructive' });
         setLoading(false);
-      });
-      return () => unsubscribe();
-    } else {
-      setLoading(false);
-    }
-  }, []);
+    });
+  }, [toast]);
   
   const signInWithGoogle = async () => {
-    const app = getFirebase();
-    if (!app) {
+    if (!auth) {
       toast({ title: 'Firebase not initialized', variant: 'destructive' });
       return;
     }
-    const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
@@ -63,12 +63,10 @@ export function AuthButton() {
   };
 
   const logout = async () => {
-    const app = getFirebase();
-     if (!app) {
+     if (!auth) {
       toast({ title: 'Firebase not initialized', variant: 'destructive' });
       return;
     }
-    const auth = getAuth(app);
     try {
       await signOut(auth);
       router.push('/');

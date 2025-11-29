@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { getFirebase } from '@/lib/firebase';
+import { getAuth, onAuthStateChanged, User, type Auth } from 'firebase/auth';
+import { initializeFirebaseClient } from '@/lib/firebase';
 import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -23,17 +23,16 @@ export default function CheckoutPage() {
   
 
   useEffect(() => {
-    const app = getFirebase();
-    if(app) {
-        const auth = getAuth(app);
+    initializeFirebaseClient().then(({ auth }) => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
           setUser(user);
           setLoading(false);
         });
         return () => unsubscribe();
-    } else {
+    }).catch(error => {
+        console.error("Firebase initialization failed:", error);
         setLoading(false);
-    }
+    });
   }, []);
 
   useEffect(() => {
