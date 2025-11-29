@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, Auth } from 'firebase/auth';
+import { getFirebase } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,30 +18,38 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [auth, setAuth] = useState<Auth | undefined>(undefined);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+    const { auth: firebaseAuth } = getFirebase();
+    setAuth(firebaseAuth);
 
-  useEffect(() => {
-    getRedirectResult(auth)
-      .catch((error) => {
-        console.error("Error getting redirect result: ", error);
-        toast({
-          title: 'Login Failed',
-          description: 'There was an error completing the sign-in process. Please try again.',
-          variant: 'destructive',
-        });
+    if (firebaseAuth) {
+      const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+        setUser(user);
+        setLoading(false);
       });
+
+      getRedirectResult(firebaseAuth)
+        .catch((error) => {
+          console.error("Error getting redirect result: ", error);
+          toast({
+            title: 'Login Failed',
+            description: 'There was an error completing the sign-in process. Please try again.',
+            variant: 'destructive',
+          });
+        });
+
+      return () => unsubscribe();
+    } else {
+      setLoading(false);
+    }
   }, [toast]);
 
   const signInWithGoogle = async () => {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
@@ -58,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    if (!auth) return;
     try {
       await signOut(auth);
       router.push('/');
