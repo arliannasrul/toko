@@ -33,6 +33,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       getRedirectResult(firebaseAuth)
+        .then((result) => {
+          if (result) {
+             // User just signed in.
+          }
+        })
         .catch((error) => {
           console.error("Error getting redirect result: ", error);
           toast({
@@ -66,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Error signing in with Google: ", error);
       toast({
         title: 'Login Failed',
-        description: 'There was an error trying to sign in with Google. Please try again.',
+        description: error.message || 'There was an error trying to sign in with Google. Please try again.',
         variant: 'destructive',
       });
     }
@@ -77,11 +82,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signOut(auth);
       router.push('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing out: ", error);
        toast({
         title: 'Logout Failed',
-        description: 'There was an error trying to sign out. Please try again.',
+        description: error.message || 'There was an error trying to sign out. Please try again.',
         variant: 'destructive',
       });
     }
