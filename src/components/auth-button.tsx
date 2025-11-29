@@ -1,8 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, User } from 'firebase/auth';
-import { initializeFirebaseClient } from '@/lib/firebase';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -15,75 +12,12 @@ import {
 } from './ui/dropdown-menu';
 import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/auth-context';
+
 
 export function AuthButton() {
-  const [user, setUser] = useState<User | null>(null);
-  const [auth, setAuth] = useState<Auth | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    initializeFirebaseClient().then(({ auth }) => {
-        setAuth(auth);
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
-        });
-        return () => unsubscribe();
-    }).catch(error => {
-        console.error("Firebase initialization failed:", error);
-        toast({ title: 'Firebase initialization failed', variant: 'destructive' });
-        setLoading(false);
-    });
-  }, [toast]);
-  
-  const signInWithGoogle = async () => {
-    if (!auth) {
-      toast({ title: 'Firebase not initialized', variant: 'destructive' });
-      return;
-    }
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      toast({
-        title: 'Signed In',
-        description: `Welcome!`,
-      });
-    } catch (error) {
-      console.error("Error signing in with Google: ", error);
-      toast({
-        title: 'Login Failed',
-        description: (error as Error).message || 'There was an error trying to sign in with Google. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const logout = async () => {
-     if (!auth) {
-      toast({ title: 'Firebase not initialized', variant: 'destructive' });
-      return;
-    }
-    try {
-      await signOut(auth);
-      router.push('/');
-      toast({
-        title: 'Signed Out',
-        description: 'You have been successfully signed out.',
-      });
-    } catch (error) {
-      console.error("Error signing out: ", error);
-       toast({
-        title: 'Logout Failed',
-        description: (error as Error).message || 'There was an error trying to sign out. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
+  const { user, loading, signInWithGoogle, logout } = useAuth();
+ 
   if (loading) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
   }

@@ -20,11 +20,11 @@ import { ScrollArea } from './ui/scroll-area';
 import { useAuth } from '@/context/auth-context';
 
 export function Cart() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, loading: cartLoading } = useCart();
 
   const renderContent = () => {
-    if (loading) {
+    if (authLoading) {
       return (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             <p>Loading...</p>
@@ -38,7 +38,6 @@ export function Cart() {
                  <ShoppingCart className="h-16 w-16 text-muted-foreground" />
                  <h3 className="text-xl font-semibold">Harap login untuk mulai berbelanja</h3>
                  <p className="text-muted-foreground">Keranjang belanja Anda akan disimpan di akun Anda.</p>
-                 {/* The AuthButton can be used here or just a link to the login page if one exists */}
              </div>
          );
     }

@@ -3,9 +3,8 @@
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import type { CartItem, Product } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
-import { getFirebase, initializeFirebaseClient } from '@/lib/firebase';
 import { collection, doc, onSnapshot, setDoc, deleteDoc, writeBatch, getDocs, type Firestore } from 'firebase/firestore';
-import { getProductById, getProductsByIds } from '@/lib/products';
+import { getProductsByIds } from '@/lib/products';
 import { useToast } from '@/hooks/use-toast';
 
 interface CartContextType {
@@ -22,17 +21,10 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, firestore } = useAuth();
   const { toast } = useToast();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [firestore, setFirestore] = useState<Firestore | null>(null);
-
-  useEffect(() => {
-    initializeFirebaseClient().then(({ firestore }) => {
-        setFirestore(firestore);
-    });
-  }, []);
 
   useEffect(() => {
     if (user && firestore) {
@@ -87,6 +79,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     
     try {
         await setDoc(docRef, { productId: product.id, quantity: newQuantity }, { merge: true });
+        toast({
+            title: "Added to cart",
+            description: `${product.name} has been successfully added to your cart.`,
+        });
     } catch (error) {
         console.error("Error adding to cart:", error);
         toast({ title: 'Error', description: 'Could not add item to cart.', variant: 'destructive'});

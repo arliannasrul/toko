@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getAuth, onAuthStateChanged, User, type Auth } from 'firebase/auth';
-import { initializeFirebaseClient } from '@/lib/firebase';
+import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -16,25 +15,10 @@ import { useToast } from '@/hooks/use-toast';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
   const { cartItems, cartTotal, clearCart, cartCount } = useCart();
   const { toast } = useToast();
   
-
-  useEffect(() => {
-    initializeFirebaseClient().then(({ auth }) => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          setUser(user);
-          setLoading(false);
-        });
-        return () => unsubscribe();
-    }).catch(error => {
-        console.error("Firebase initialization failed:", error);
-        setLoading(false);
-    });
-  }, []);
-
   useEffect(() => {
     if (!loading && !user) {
       toast({

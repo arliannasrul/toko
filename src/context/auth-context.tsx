@@ -1,16 +1,19 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut, Auth } from 'firebase/auth';
+import { onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut, Auth, getRedirectResult, signInWithRedirect } from 'firebase/auth';
 import { getFirebase } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import type { Firestore } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  auth: Auth | null;
+  firestore: Firestore | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [auth, setAuth] = useState<Auth | null>(null);
+  const [firestore, setFirestore] = useState<Firestore | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -43,8 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const { auth: firebaseAuth } = getFirebase(firebaseConfig);
+    const { auth: firebaseAuth, firestore: firebaseFirestore } = getFirebase(firebaseConfig);
     setAuth(firebaseAuth);
+    setFirestore(firebaseFirestore);
 
     const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
       setUser(user);
@@ -90,6 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signOut(auth);
       router.push('/');
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
     } catch (error) {
       console.error("Error signing out: ", error);
        toast({
@@ -100,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = { user, loading, signInWithGoogle, logout };
+  const value = { user, loading, signInWithGoogle, logout, auth, firestore };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

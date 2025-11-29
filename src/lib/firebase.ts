@@ -4,59 +4,32 @@ import { initializeApp, getApps, getApp, type FirebaseApp, type FirebaseOptions 
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
-let firestore: Firestore | null = null;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let firestore: Firestore | undefined;
 
-async function getFirebaseConfig(): Promise<FirebaseOptions | null> {
-    try {
-        const response = await fetch('/api/init');
-        if (!response.ok) {
-            throw new Error('Failed to fetch Firebase config');
-        }
-        const firebaseConfig = await response.json();
-
-        if (!firebaseConfig.apiKey) {
-            console.error("Firebase config is missing from API.");
-            return null;
-        }
-        return firebaseConfig;
-
-    } catch (error) {
-        console.error("Failed to load Firebase config:", error);
-        return null;
-    }
-}
-
-
-export async function initializeFirebaseClient() {
+// This function can be called multiple times, it will only initialize once.
+export function getFirebase(config: FirebaseOptions) {
   if (app) {
-    return { app, auth, firestore };
+    return { app, auth: auth!, firestore: firestore! };
   }
 
-  const firebaseConfig = await getFirebaseConfig();
-
-  if (!firebaseConfig) {
-      throw new Error("Firebase config not found");
-  }
-
-  if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-  } else {
+  if (getApps().length > 0) {
     app = getApp();
+  } else {
+    app = initializeApp(config);
   }
+  
   auth = getAuth(app);
   firestore = getFirestore(app);
 
   return { app, auth, firestore };
 }
 
-
-export function getFirebase() {
+// This function should only be called on the client after initialization
+export function getFirebaseClient() {
   if (!app || !auth || !firestore) {
-    // This should not happen on the client if initialization is done correctly.
-     throw new Error("Firebase app could not be initialized.");
+    throw new Error('Firebase has not been initialized. Please call getFirebase with config first.');
   }
-
   return { app, auth, firestore };
 }
