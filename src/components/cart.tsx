@@ -36,8 +36,8 @@ export function Cart() {
          return (
              <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center p-4">
                  <ShoppingCart className="h-16 w-16 text-muted-foreground" />
-                 <h3 className="text-xl font-semibold">Harap login untuk mulai berbelanja</h3>
-                 <p className="text-muted-foreground">Keranjang belanja Anda akan disimpan di akun Anda.</p>
+                 <h3 className="text-xl font-semibold">Please log in to start shopping</h3>
+                 <p className="text-muted-foreground">Your shopping cart will be saved to your account.</p>
              </div>
          );
     }
@@ -114,7 +114,7 @@ export function Cart() {
                   <span>${cartTotal.toFixed(2)}</span>
                 </div>
                  <SheetClose asChild>
-                    <Button asChild className="w-full" disabled={cartCount === 0}>
+                    <Button asChild className="w-full" disabled={cartCount === 0 || cartLoading}>
                       <Link href="/checkout">Proceed to Checkout</Link>
                     </Button>
                   </SheetClose>

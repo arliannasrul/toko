@@ -12,15 +12,16 @@ import { placeholderImages } from '@/lib/placeholder-images';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
-  const { cartItems, cartTotal, clearCart, cartCount } = useCart();
+  const { user, loading: authLoading } = useAuth();
+  const { cartItems, cartTotal, clearCart, cartCount, loading: cartLoading } = useCart();
   const { toast } = useToast();
   
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       toast({
         title: 'Authentication Required',
         description: 'Please sign in to proceed to checkout.',
@@ -28,10 +29,15 @@ export default function CheckoutPage() {
       });
       router.push('/');
     }
-    if (!loading && cartCount === 0) {
+    if (!cartLoading && cartCount === 0) {
+        toast({
+            title: 'Your cart is empty',
+            description: 'Please add items to your cart before checking out.',
+            variant: 'destructive',
+        });
         router.push('/');
     }
-  }, [user, loading, router, toast, cartCount]);
+  }, [user, authLoading, cartCount, cartLoading, router, toast]);
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,11 +46,34 @@ export default function CheckoutPage() {
     router.push('/checkout/success');
   };
   
-  if (loading || !user) {
+  if (authLoading || cartLoading || !user) {
     return (
-        <div className="flex items-center justify-center h-screen">
-            <div className="text-center">
-                <p className="text-lg">Loading checkout...</p>
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold tracking-tight mb-8 text-center font-headline">Checkout</h1>
+            <div className="grid md:grid-cols-2 gap-12">
+                <div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Shipping Information</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                        </CardContent>
+                    </Card>
+                </div>
+                <div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Order Summary</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Skeleton className="h-16 w-full" />
+                            <Skeleton className="h-16 w-full" />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
