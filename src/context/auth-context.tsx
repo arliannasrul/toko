@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, Auth } from 'firebase/auth';
+import { onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut, Auth } from 'firebase/auth';
 import { getFirebase } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -51,33 +51,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    getRedirectResult(firebaseAuth)
-      .then((result) => {
-        if (result) {
-          toast({
-            title: 'Signed In',
-            description: `Welcome, ${result.user.displayName}!`,
-          });
-        }
-      })
-      .catch((error) => {
-        if (error.code === 'auth/unauthorized-domain') {
-             console.error("Firebase Auth Error: This domain is not authorized. Please check your Firebase project settings.", error);
-             toast({
-                title: 'Configuration Error',
-                description: 'This domain is not authorized for authentication. Please check your Firebase console.',
-                variant: 'destructive',
-            });
-        } else if (error.code !== 'auth/user-cancelled') {
-             console.error("Error getting redirect result: ", error);
-            toast({
-                title: 'Login Failed',
-                description: 'There was an error completing the sign-in process. Please try again.',
-                variant: 'destructive',
-            });
-        }
-      });
-
     return () => unsubscribe();
   }, [toast]);
 
@@ -94,7 +67,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      toast({
+        title: 'Signed In',
+        description: `Welcome, ${result.user.displayName}!`,
+      });
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       toast({
