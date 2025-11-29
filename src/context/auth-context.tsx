@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     if (!firebaseConfig.apiKey) {
+      console.error('Firebase API Key is missing.');
       toast({
         title: 'Configuration Error',
         description: 'Firebase API Key is missing. The app will not work correctly.',
@@ -60,12 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch((error) => {
-        console.error("Error getting redirect result: ", error);
-        toast({
-          title: 'Login Failed',
-          description: 'There was an error completing the sign-in process. Please try again.',
-          variant: 'destructive',
-        });
+        if (error.code !== 'auth/user-cancelled') {
+             console.error("Error getting redirect result: ", error);
+            toast({
+                title: 'Login Failed',
+                description: 'There was an error completing the sign-in process. Please try again.',
+                variant: 'destructive',
+            });
+        }
       });
 
     return () => unsubscribe();
@@ -73,23 +76,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     if (!auth) {
+      console.error("Firebase auth is not initialized.");
       toast({
         title: 'Authentication not ready',
         description: 'Firebase is not initialized yet. Please wait a moment and try again.',
         variant: 'destructive'
       });
-      console.error("Firebase auth is not initialized.");
       return;
     }
 
     const provider = new GoogleAuthProvider();
     try {
       await signInWithRedirect(auth, provider);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error signing in with Google: ", error);
       toast({
         title: 'Login Failed',
-        description: error.message || 'There was an error trying to sign in with Google. Please try again.',
+        description: (error as Error).message || 'There was an error trying to sign in with Google. Please try again.',
         variant: 'destructive',
       });
     }
@@ -103,11 +106,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signOut(auth);
       router.push('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error signing out: ", error);
        toast({
         title: 'Logout Failed',
-        description: error.message || 'There was an error trying to sign out. Please try again.',
+        description: (error as Error).message || 'There was an error trying to sign out. Please try again.',
         variant: 'destructive',
       });
     }
