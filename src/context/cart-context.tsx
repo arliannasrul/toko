@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number) => Promise<boolean>;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -66,26 +66,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return doc(firestore, 'users', user.uid, 'cart_items', productId);
   }
 
-  const addToCart = async (product: Product, quantity: number = 1) => {
+  const addToCart = async (product: Product, quantity: number = 1): Promise<boolean> => {
     if (!user || !firestore) {
       toast({ title: 'Please log in', description: 'You need to be logged in to add items to your cart.', variant: 'destructive'});
-      return;
+      return false;
     }
     const docRef = getCartDocRef(product.id);
-    if (!docRef) return;
+    if (!docRef) return false;
 
     const existingItem = cartItems.find(item => item.product.id === product.id);
     const newQuantity = existingItem ? existingItem.quantity + quantity : quantity;
     
     try {
         await setDoc(docRef, { productId: product.id, quantity: newQuantity }, { merge: true });
-        toast({
-            title: "Added to cart",
-            description: `${product.name} has been successfully added to your cart.`,
-        });
+        return true;
     } catch (error) {
         console.error("Error adding to cart:", error);
         toast({ title: 'Error', description: 'Could not add item to cart.', variant: 'destructive'});
+        return false;
     }
   };
 

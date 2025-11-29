@@ -38,12 +38,14 @@ export default function ProductDetailPage() {
     );
   }
   
-  const handleAddToCart = () => {
-    addToCart(product);
-    toast({
-        title: "Added to cart",
-        description: `${product.name} has been successfully added to your cart.`,
-    });
+  const handleAddToCart = async () => {
+    const success = await addToCart(product);
+    if (success) {
+      toast({
+          title: "Added to cart",
+          description: `${product.name} has been successfully added to your cart.`,
+      });
+    }
   };
 
   const image = placeholderImages.find((img) => img.id === product.imageId);
