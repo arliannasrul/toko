@@ -32,9 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     };
     
-    // DIAGNOSTIC LOG: This will print the config to your browser's developer console.
-    console.error("FIREBASE CONFIG BEING USED:", firebaseConfig);
-
     if (!firebaseConfig.apiKey) {
       console.error("Firebase API key is missing. Please check your .env file and restart the server.");
       toast({
