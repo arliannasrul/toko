@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged, User, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -29,12 +29,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    getRedirectResult(auth)
+      .catch((error) => {
+        console.error("Error getting redirect result: ", error);
+        toast({
+          title: 'Login Gagal',
+          description: 'Terjadi kesalahan saat menyelesaikan proses masuk. Silakan coba lagi.',
+          variant: 'destructive',
+        });
+      });
+  }, [toast]);
+
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
     try {
-      await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
