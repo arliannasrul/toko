@@ -39,6 +39,7 @@ export default function ProductDetailPage() {
   }
   
   const handleAddToCart = async () => {
+    if (!product) return;
     const success = await addToCart(product);
     if (success) {
       toast({
