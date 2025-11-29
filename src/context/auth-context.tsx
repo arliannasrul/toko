@@ -33,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     if (!firebaseConfig.apiKey) {
-      console.error("Firebase API key is missing. Please check your .env file and restart the server.");
       toast({
         title: 'Configuration Error',
         description: 'Firebase API Key is missing. The app will not work correctly.',
@@ -85,8 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const provider = new GoogleAuthProvider();
     try {
-      // Explicitly setting authDomain as a last resort for complex environments.
-      await signInWithRedirect(auth, provider, undefined);
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
