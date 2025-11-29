@@ -1,6 +1,8 @@
 'use client';
 
-import { useAuth } from '@/context/auth-context';
+import { useState, useEffect } from 'react';
+import { getAuth, onAuthStateChanged, signInWithRedirect, signOut, GoogleAuthProvider, User } from 'firebase/auth';
+import { getFirebase } from '@/lib/firebase';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
@@ -13,9 +15,56 @@ import {
 } from './ui/dropdown-menu';
 import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 export function AuthButton() {
-  const { user, loading, signInWithGoogle, logout } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const auth = getAuth(getFirebase());
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [auth]);
+  
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithRedirect(auth, provider);
+    } catch (error) {
+      console.error("Error signing in with Google: ", error);
+      toast({
+        title: 'Login Failed',
+        description: (error as Error).message || 'There was an error trying to sign in with Google. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+    } catch (error) {
+      console.error("Error signing out: ", error);
+       toast({
+        title: 'Logout Failed',
+        description: (error as Error).message || 'There was an error trying to sign out. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (loading) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
