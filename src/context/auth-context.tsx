@@ -34,8 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .catch((error) => {
         console.error("Error getting redirect result: ", error);
         toast({
-          title: 'Login Gagal',
-          description: 'Terjadi kesalahan saat menyelesaikan proses masuk. Silakan coba lagi.',
+          title: 'Login Failed',
+          description: 'There was an error completing the sign-in process. Please try again.',
           variant: 'destructive',
         });
       });
@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
-        title: 'Login Gagal',
-        description: 'Terjadi kesalahan saat mencoba masuk dengan Google. Silakan coba lagi.',
+        title: 'Login Failed',
+        description: 'There was an error trying to sign in with Google. Please try again.',
         variant: 'destructive',
       });
     }
@@ -64,8 +64,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error signing out: ", error);
        toast({
-        title: 'Logout Gagal',
-        description: 'Terjadi kesalahan saat mencoba keluar. Silakan coba lagi.',
+        title: 'Logout Failed',
+        description: 'There was an error trying to sign out. Please try again.',
         variant: 'destructive',
       });
     }
