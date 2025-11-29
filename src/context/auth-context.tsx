@@ -23,38 +23,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    const { auth: firebaseAuth } = getFirebase();
+    const firebaseConfig = {
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    };
+    
+    if (!firebaseConfig.apiKey) {
+      console.error("Firebase API key is missing. Please check your .env file and restart the server.");
+      toast({
+        title: 'Configuration Error',
+        description: 'Firebase API Key is missing. The app will not work correctly.',
+        variant: 'destructive'
+      });
+      setLoading(false);
+      return;
+    }
+
+    const { auth: firebaseAuth } = getFirebase(firebaseConfig);
     setAuth(firebaseAuth);
 
-    if (firebaseAuth) {
-      const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-        setUser(user);
-        setLoading(false);
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    getRedirectResult(firebaseAuth)
+      .then((result) => {
+        if (result) {
+          toast({
+            title: 'Signed In',
+            description: `Welcome, ${result.user.displayName}!`,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error getting redirect result: ", error);
+        toast({
+          title: 'Login Failed',
+          description: 'There was an error completing the sign-in process. Please try again.',
+          variant: 'destructive',
+        });
       });
 
-      getRedirectResult(firebaseAuth)
-        .then((result) => {
-          if (result) {
-            // User just signed in.
-            toast({
-              title: 'Signed In',
-              description: `Welcome, ${result.user.displayName}!`,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error getting redirect result: ", error);
-          toast({
-            title: 'Login Failed',
-            description: 'There was an error completing the sign-in process. Please try again.',
-            variant: 'destructive',
-          });
-        });
-
-      return () => unsubscribe();
-    } else {
-      setLoading(false);
-    }
+    return () => unsubscribe();
   }, [toast]);
 
   const signInWithGoogle = async () => {
@@ -69,8 +84,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const provider = new GoogleAuthProvider();
-    provider.addScope('profile');
-    provider.addScope('email');
     try {
       await signInWithRedirect(auth, provider);
     } catch (error: any) {
